@@ -22,8 +22,13 @@
       padding: 30px;
       width: 320px;
       box-shadow: 0 0 150px rgba(0, 0, 0, 0.99);
-      margin-bottom: 40px;
+      margin-bottom: 10px;
       direction: rtl;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 640px; /* تعديل لضمان أن الحقوق تكون بأسفل الإطار */
     }
 
     #display, #taxDisplay, #discountedPrice {
@@ -65,7 +70,6 @@
       background-color: #ff4d4d;
     }
 
-    /* تصميم مربع الاختيار */
     .checkbox-container {
       display: flex;
       align-items: center;
@@ -137,7 +141,6 @@
       border-radius: 110px;
       direction: ltr;
       margin-bottom: 20px;
-      webkit-overflow-scrolling: touch;
       background: rgba(255,255,255,0.05);
     }
 
@@ -175,51 +178,68 @@
       border-radius: 50%;
       margin: 0 5px;
     }
+
+    /* حقوق الحفظ */
+    .designer-credit {
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      font-style: italic;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+      margin-top: auto;
+      padding-top: 15px;
+    }
   </style>
 </head>
 <body>
 
   <div class="calculator">
-    <div id="display">0</div>
-    <div id="taxDisplay">مع الضريبة: 0.00</div>
-    <div id="discountedPrice">بعد الخصم: 0.00</div>
+    <div>
+      <div id="display">0</div>
+      <div id="taxDisplay">مع الضريبة: 0.00</div>
+      <div id="discountedPrice">بعد الخصم: 0.00</div>
 
-    <!-- مربع الاختيار لعرض المبلغ مع الضريبة -->
-    <div class="checkbox-container">
-      <label for="includeTax">عرض المبلغ مع الضريبة:</label>
-      <input type="checkbox" id="includeTax" checked />
+      <div class="checkbox-container">
+        <label for="includeTax">عرض المبلغ مع الضريبة:</label>
+        <input type="checkbox" id="includeTax" checked />
+      </div>
+
+      <div id="discountWheel"></div>
+
+      <div class="buttons">
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button onclick="setOperation('/')">÷</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button onclick="setOperation('*')">×</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button onclick="setOperation('-')">−</button>
+
+        <button onclick="appendNumber('.')">.</button>
+        <button onclick="appendNumber('0')">0</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="setOperation('+')">+</button>
+
+        <button class="clear" onclick="clearDisplay()">⌦ مسح</button>
+      </div>
     </div>
 
-    <div id="discountWheel"></div>
-
-    <div class="buttons">
-      <button onclick="appendNumber('7')">7</button>
-      <button onclick="appendNumber('8')">8</button>
-      <button onclick="appendNumber('9')">9</button>
-      <button onclick="setOperation('/')">÷</button>
-
-      <button onclick="appendNumber('4')">4</button>
-      <button onclick="appendNumber('5')">5</button>
-      <button onclick="appendNumber('6')">6</button>
-      <button onclick="setOperation('*')">×</button>
-
-      <button onclick="appendNumber('1')">1</button>
-      <button onclick="appendNumber('2')">2</button>
-      <button onclick="appendNumber('3')">3</button>
-      <button onclick="setOperation('-')">−</button>
-
-      <button onclick="appendNumber('.')">.</button>
-      <button onclick="appendNumber('0')">0</button>
-      <button onclick="calculate()">=</button>
-      <button onclick="setOperation('+')">+</button>
-
-      <button class="clear" onclick="clearDisplay()">⌦ مسح</button>
-    </div>
+    <!-- حقوق الحفظ -->
+    <div class="designer-credit">© Khaled.55783</div>
   </div>
 
   <script>
     let currentInput = '';
     let currentOperation = '';
+    let previousValue = '';
     const vatRate = 0.15;
     let currentDiscount = 0;
 
@@ -343,4 +363,3 @@
 
 </body>
 </html>
-
