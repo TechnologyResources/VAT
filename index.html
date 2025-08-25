@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>VAT Calculator مع خصم أفقي</title>
+  <style>
+    body {
+      background-color: #5e3b89;
+      font-family: 'Arial', sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .calculator {
+      background-color: rgba(25, 25, 25, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      width: 320px;
+      box-shadow: 0 0 150px rgba(0, 0, 0, 0.99);
+      margin-bottom: 40px;
+      direction: rtl;
+    }
+
+    #display, #taxDisplay, #discountedPrice {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 150px;
+      padding: 15px;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      min-height: 30px;
+      color: white;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 25px;
+      border: none;
+      border-radius: 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #ff4f81;
+      transform: scale(1.1);
+    }
+
+    button.clear {
+      grid-column: span 4;
+      background-color: #ff4d4d;
+    }
+
+    /* تصميم مربع الاختيار */
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      margin-right: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+    }
+
+    input[type="checkbox"] {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(145deg, #6b3e77, #ff4f81);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      appearance: none;
+      outline: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:checked {
+      background: linear-gradient(145deg, #ff4f81, #ff4b81);
+      box-shadow: 0 0 30px rgba(255, 79, 129, 0.7);
+    }
+
+    input[type="checkbox"]:checked::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 24px;
+      height: 24px;
+      background-color: white;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:checked::after {
+      content: '✔';
+      position: absolute;
+      top: 5px;
+      left: 8px;
+      font-size: 20px;
+      color: #ff4f81;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    input[type="checkbox"]:not(:checked)::after {
+      content: '';
+      opacity: 0;
+    }
+
+    #discountWheel {
+      width: 320px;
+      height: 60px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scroll-behavior: smooth;
+      margin-top: 30px;
+      border-radius: 110px;
+      direction: ltr;
+      margin-bottom: 20px;
+      webkit-overflow-scrolling: touch;
+      background: rgba(255,255,255,0.05);
+    }
+
+    #discountWheel::-webkit-scrollbar {
+      height: 8px;
+    }
+    #discountWheel::-webkit-scrollbar-thumb {
+      background: #ff4f81;
+      border-radius: 4px;
+    }
+
+    .discountItem {
+      display: inline-block;
+      width: 40px;
+      height: 100px;
+      line-height: 60px;
+      text-align: center;
+      color: #aaa;
+      font-size: 18px;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s, font-weight 0.2s, font-size 0.2s, background-color 0.2s, border 0.2s;
+      position: relative;
+      margin: 0 5px;
+      border-radius: 10px;
+    }
+
+    .discountItem.selected {
+      color: white;
+      font-weight: bold;
+      font-size: 22px;
+      background-color: rgba(255, 79, 129, 0.3);
+      border: 2px solid #ff4f81;
+      padding: 0 5px;
+      border-radius: 50%;
+      margin: 0 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <div id="display">0</div>
+    <div id="taxDisplay">مع الضريبة: 0.00</div>
+    <div id="discountedPrice">بعد الخصم: 0.00</div>
+
+    <!-- مربع الاختيار لعرض المبلغ مع الضريبة -->
+    <div class="checkbox-container">
+      <label for="includeTax">عرض المبلغ مع الضريبة:</label>
+      <input type="checkbox" id="includeTax" checked />
+    </div>
+
+    <div id="discountWheel"></div>
+
+    <div class="buttons">
+      <button onclick="appendNumber('7')">7</button>
+      <button onclick="appendNumber('8')">8</button>
+      <button onclick="appendNumber('9')">9</button>
+      <button onclick="setOperation('/')">÷</button>
+
+      <button onclick="appendNumber('4')">4</button>
+      <button onclick="appendNumber('5')">5</button>
+      <button onclick="appendNumber('6')">6</button>
+      <button onclick="setOperation('*')">×</button>
+
+      <button onclick="appendNumber('1')">1</button>
+      <button onclick="appendNumber('2')">2</button>
+      <button onclick="appendNumber('3')">3</button>
+      <button onclick="setOperation('-')">−</button>
+
+      <button onclick="appendNumber('.')">.</button>
+      <button onclick="appendNumber('0')">0</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="setOperation('+')">+</button>
+
+      <button class="clear" onclick="clearDisplay()">⌦ مسح</button>
+    </div>
+  </div>
+
+  <script>
+    let currentInput = '';
+    let currentOperation = '';
+    const vatRate = 0.15;
+    let currentDiscount = 0;
+
+    const discountWheel = document.getElementById('discountWheel');
+    const discounts = [];
+    for (let i = 0; i <= 100; i += 0.5) {
+      discounts.push(i);
+    }
+
+    discounts.forEach(d => {
+      const item = document.createElement('div');
+      item.classList.add('discountItem');
+      item.dataset.value = d;
+      item.textContent = (d % 1 === 0) ? d.toFixed(0) : d.toFixed(1);
+      discountWheel.appendChild(item);
+
+      item.addEventListener('click', () => {
+        selectDiscount(d);
+      });
+    });
+
+    function selectDiscount(value) {
+      currentDiscount = value;
+      document.querySelectorAll('.discountItem').forEach(el => el.classList.remove('selected'));
+      const selectedEl = Array.from(document.querySelectorAll('.discountItem'))
+        .find(el => parseFloat(el.dataset.value) === value);
+      if (selectedEl) selectedEl.classList.add('selected');
+
+      applyDiscount(value);
+    }
+
+    window.onload = () => {
+      selectDiscount(0);
+      discountWheel.scrollLeft = 0;
+      updateDisplay('0');
+      updateTaxDisplay('0');
+      updateDiscountedPrice(0);
+    };
+
+    function appendNumber(number) {
+      if (currentInput.length < 12) {
+        currentInput += number;
+        updateDisplay(currentInput);
+        updateTaxDisplay(currentInput);
+        applyDiscount(currentDiscount);
+      }
+    }
+
+    function setOperation(op) {
+      if (currentInput === '') return;
+      currentOperation = op;
+      previousValue = currentInput;
+      currentInput = '';
+    }
+
+    function calculate() {
+      if (currentInput === '' || previousValue === '') return;
+      const a = parseFloat(previousValue);
+      const b = parseFloat(currentInput);
+      let result = 0;
+
+      switch (currentOperation) {
+        case '+': result = a + b; break;
+        case '-': result = a - b; break;
+        case '*': result = a * b; break;
+        case '/': result = a / b; break;
+      }
+
+      currentInput = result.toString();
+      updateDisplay(currentInput);
+      updateTaxDisplay(currentInput);
+      applyDiscount(currentDiscount);
+      previousValue = '';
+      currentOperation = '';
+    }
+
+    function clearDisplay() {
+      currentInput = '';
+      previousValue = '';
+      currentOperation = '';
+      updateDisplay('0');
+      updateTaxDisplay('0');
+      updateDiscountedPrice(0);
+    }
+
+    function updateDisplay(value) {
+      document.getElementById('display').textContent = value;
+    }
+
+    function updateTaxDisplay(value) {
+      const val = parseFloat(value);
+      if (!isNaN(val)) {
+        const taxed = val * (1 + vatRate);
+        document.getElementById('taxDisplay').textContent = 'مع الضريبة: ' + taxed.toFixed(2);
+      }
+    }
+
+    function updateDiscountedPrice(value) {
+      document.getElementById('discountedPrice').textContent = 'بعد الخصم: ' + value.toFixed(2);
+    }
+
+    function applyDiscount(discountPercent) {
+      const val = parseFloat(currentInput);
+      if (!isNaN(discountPercent) && !isNaN(val)) {
+        let finalAmount = val;
+        const includeTax = document.getElementById('includeTax').checked;
+
+        if (includeTax) {
+          finalAmount = finalAmount * (1 + vatRate); 
+        }
+
+        const discounted = finalAmount - (finalAmount * (discountPercent / 100)); 
+        updateDiscountedPrice(discounted); 
+      }
+    }
+
+    document.getElementById('includeTax').addEventListener('change', () => {
+      applyDiscount(currentDiscount); 
+    });
+  </script>
+
+</body>
+</html>
