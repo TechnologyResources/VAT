@@ -9,368 +9,1645 @@
      crossorigin="anonymous"></script>
 
 <link rel="icon" href="images/favicon.png" type="image/png">
+    <meta name="author" content="Khaled.55783">
     
-
-  <style>
-    body {
-      background-color: #5e3b89;
-      font-family: 'Arial', sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .calculator {
-      background-color: rgba(25, 25, 25, 0.1);
-      border-radius: 20px;
-      padding: 30px;
-      width: 320px;
-      box-shadow: 0 0 150px rgba(0, 0, 0, 0.99);
-      margin-bottom: 10px;
-      direction: rtl;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 640px; /* تعديل لضمان أن الحقوق تكون بأسفل الإطار */
-    }
-
-    #display, #taxDisplay, #discountedPrice {
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 150px;
-      padding: 15px;
-      font-size: 20px;
-      text-align: center;
-      margin-bottom: 10px;
-      min-height: 30px;
-      color: white;
-    }
-
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    button {
-      padding: 15px;
-      font-size: 25px;
-      border: none;
-      border-radius: 15px;
-      background-color: rgba(255, 255, 255, 0.2);
-      color: white;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s ease-in-out;
-    }
-
-    button:hover {
-      background-color: #ff4f81;
-      transform: scale(1.1);
-    }
-
-    button.clear {
-      grid-column: span 4;
-      background-color: #ff4d4d;
-    }
-
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      margin-top: 15px;
-      margin-bottom: 20px;
-    }
-
-    label {
-      margin-right: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      color: white;
-    }
-
-    input[type="checkbox"] {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(145deg, #6b3e77, #ff4f81);
-      border-radius: 10px;
-      position: relative;
-      cursor: pointer;
-      appearance: none;
-      outline: none;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
-    }
-
-    input[type="checkbox"]:checked {
-      background: linear-gradient(145deg, #ff4f81, #ff4b81);
-      box-shadow: 0 0 30px rgba(255, 79, 129, 0.7);
-    }
-
-    input[type="checkbox"]:checked::before {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 24px;
-      height: 24px;
-      background-color: white;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-    }
-
-    input[type="checkbox"]:checked::after {
-      content: '✔';
-      position: absolute;
-      top: 5px;
-      left: 8px;
-      font-size: 20px;
-      color: #ff4f81;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-    }
-
-    input[type="checkbox"]:not(:checked)::after {
-      content: '';
-      opacity: 0;
-    }
-
-    #discountWheel {
-      width: 320px;
-      height: 60px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      scroll-behavior: smooth;
-      margin-top: 30px;
-      border-radius: 110px;
-      direction: ltr;
-      margin-bottom: 20px;
-      background: rgba(255,255,255,0.05);
-    }
-
-    #discountWheel::-webkit-scrollbar {
-      height: 8px;
-    }
-    #discountWheel::-webkit-scrollbar-thumb {
-      background: #ff4f81;
-      border-radius: 4px;
-    }
-
-    .discountItem {
-      display: inline-block;
-      width: 40px;
-      height: 100px;
-      line-height: 60px;
-      text-align: center;
-      color: #aaa;
-      font-size: 18px;
-      cursor: pointer;
-      user-select: none;
-      transition: color 0.2s, font-weight 0.2s, font-size 0.2s, background-color 0.2s, border 0.2s;
-      position: relative;
-      margin: 0 5px;
-      border-radius: 10px;
-    }
-
-    .discountItem.selected {
-      color: white;
-      font-weight: bold;
-      font-size: 22px;
-      background-color: rgba(255, 79, 129, 0.3);
-      border: 2px solid #ff4f81;
-      padding: 0 5px;
-      border-radius: 50%;
-      margin: 0 5px;
-    }
-
-    /* حقوق الحفظ */
-    .designer-credit {
-      text-align: center;
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.6);
-      font-style: italic;
-      letter-spacing: 0.5px;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
-      margin-top: auto;
-      padding-top: 15px;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="calculator">
-    <div>
-      <div id="display">0</div>
-      <div id="taxDisplay">مع الضريبة: 0.00</div>
-      <div id="discountedPrice">بعد الخصم: 0.00</div>
-
-      <div class="checkbox-container">
-        <label for="includeTax">عرض المبلغ مع الضريبة:</label>
-        <input type="checkbox" id="includeTax" checked />
-      </div>
-
-      <div id="discountWheel"></div>
-
-      <div class="buttons">
-        <button onclick="appendNumber('7')">7</button>
-        <button onclick="appendNumber('8')">8</button>
-        <button onclick="appendNumber('9')">9</button>
-        <button onclick="setOperation('/')">÷</button>
-
-        <button onclick="appendNumber('4')">4</button>
-        <button onclick="appendNumber('5')">5</button>
-        <button onclick="appendNumber('6')">6</button>
-        <button onclick="setOperation('*')">×</button>
-
-        <button onclick="appendNumber('1')">1</button>
-        <button onclick="appendNumber('2')">2</button>
-        <button onclick="appendNumber('3')">3</button>
-        <button onclick="setOperation('-')">−</button>
-
-        <button onclick="appendNumber('.')">.</button>
-        <button onclick="appendNumber('0')">0</button>
-        <button onclick="calculate()">=</button>
-        <button onclick="setOperation('+')">+</button>
-
-        <button class="clear" onclick="clearDisplay()">⌦ مسح</button>
-      </div>
-    </div>
-
-    <!-- حقوق الحفظ -->
-    <div class="designer-credit">© Khaled.55783</div>
-  </div>
-
-  <script>
-    let currentInput = '';
-    let currentOperation = '';
-    let previousValue = '';
-    const vatRate = 0.15;
-    let currentDiscount = 0;
-
-    const discountWheel = document.getElementById('discountWheel');
-    const discounts = [];
-    for (let i = 0; i <= 100; i += 0.5) {
-      discounts.push(i);
-    }
-
-    discounts.forEach(d => {
-      const item = document.createElement('div');
-      item.classList.add('discountItem');
-      item.dataset.value = d;
-      item.textContent = (d % 1 === 0) ? d.toFixed(0) : d.toFixed(1);
-      discountWheel.appendChild(item);
-
-      item.addEventListener('click', () => {
-        selectDiscount(d);
-      });
-    });
-
-    function selectDiscount(value) {
-      currentDiscount = value;
-      document.querySelectorAll('.discountItem').forEach(el => el.classList.remove('selected'));
-      const selectedEl = Array.from(document.querySelectorAll('.discountItem'))
-        .find(el => parseFloat(el.dataset.value) === value);
-      if (selectedEl) selectedEl.classList.add('selected');
-
-      applyDiscount(value);
-    }
-
-    window.onload = () => {
-      selectDiscount(0);
-      discountWheel.scrollLeft = 0;
-      updateDisplay('0');
-      updateTaxDisplay('0');
-      updateDiscountedPrice(0);
-    };
-
-    function appendNumber(number) {
-      if (currentInput.length < 12) {
-        currentInput += number;
-        updateDisplay(currentInput);
-        updateTaxDisplay(currentInput);
-        applyDiscount(currentDiscount);
-      }
-    }
-
-    function setOperation(op) {
-      if (currentInput === '') return;
-      currentOperation = op;
-      previousValue = currentInput;
-      currentInput = '';
-    }
-
-    function calculate() {
-      if (currentInput === '' || previousValue === '') return;
-      const a = parseFloat(previousValue);
-      const b = parseFloat(currentInput);
-      let result = 0;
-
-      switch (currentOperation) {
-        case '+': result = a + b; break;
-        case '-': result = a - b; break;
-        case '*': result = a * b; break;
-        case '/': result = a / b; break;
-      }
-
-      currentInput = result.toString();
-      updateDisplay(currentInput);
-      updateTaxDisplay(currentInput);
-      applyDiscount(currentDiscount);
-      previousValue = '';
-      currentOperation = '';
-    }
-
-    function clearDisplay() {
-      currentInput = '';
-      previousValue = '';
-      currentOperation = '';
-      updateDisplay('0');
-      updateTaxDisplay('0');
-      updateDiscountedPrice(0);
-    }
-
-    function updateDisplay(value) {
-      document.getElementById('display').textContent = value;
-    }
-
-    function updateTaxDisplay(value) {
-      const val = parseFloat(value);
-      if (!isNaN(val)) {
-        const taxed = val * (1 + vatRate);
-        document.getElementById('taxDisplay').textContent = 'مع الضريبة: ' + taxed.toFixed(2);
-      }
-    }
-
-    function updateDiscountedPrice(value) {
-      document.getElementById('discountedPrice').textContent = 'بعد الخصم: ' + value.toFixed(2);
-    }
-
-    function applyDiscount(discountPercent) {
-      const val = parseFloat(currentInput);
-      if (!isNaN(discountPercent) && !isNaN(val)) {
-        let finalAmount = val;
-        const includeTax = document.getElementById('includeTax').checked;
-
-        if (includeTax) {
-          finalAmount = finalAmount * (1 + vatRate); 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: "#4facfe",
+                            DEFAULT: "#4facfe",
+                            dark: "#3a8fd9"
+                        },
+                        secondary: {
+                            light: "#718096",
+                            DEFAULT: "#718096",
+                            dark: "#4a5568"
+                        },
+                        background: {
+                            light: "#e0e5ec",
+                            DEFAULT: "#e0e5ec",
+                            dark: "#a3b1c6"
+                        },
+                        success: "#48bb78",
+                        warning: "#ed8936",
+                        danger: "#f56565"
+                    },
+                    fontFamily: {
+                        'tajawal': ['Tajawal', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'neumorphic': '20px 20px 60px #bebebe, -20px -20px 60px #ffffff',
+                        'neumorphic-inset': 'inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff',
+                        'neumorphic-btn': '6px 6px 12px #bebebe, -6px -6px 12px #ffffff',
+                        'neumorphic-btn-inset': 'inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff'
+                    },
+                    borderRadius: {
+                        'xl': '40px',
+                        '2xl': '50px'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --primary-color: #4facfe;
+            --secondary-color: #718096;
+            --background-color: #e0e5ec;
+            --text-color: #4a5568;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #f56565;
         }
 
-        const discounted = finalAmount - (finalAmount * (discountPercent / 100)); 
-        updateDiscountedPrice(discounted); 
-      }
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    document.getElementById('includeTax').addEventListener('change', () => {
-      applyDiscount(currentDiscount); 
-    });
-  </script>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
 
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 80%, rgba(79, 172, 254, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 20%, rgba(113, 128, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--text-color);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: var(--secondary-color);
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .calculator {
+            background: var(--background-color);
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: 25px 25px 50px var(--shadow-dark), -25px -25px 50px var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .calculator::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .display {
+            background: var(--background-color);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: inset 8px 8px 16px var(--shadow-dark), inset -8px -8px 16px var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .display-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .current-input {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--text-color);
+            text-align: left;
+            min-height: 50px;
+            word-break: break-all;
+            margin-bottom: 15px;
+            direction: ltr;
+            overflow-wrap: break-word;
+        }
+
+        .calculation-info {
+            border-top: 1px solid rgba(113, 128, 150, 0.2);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--text-color);
+            font-weight: 600;
+            direction: ltr;
+        }
+
+        .discount-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .discount-wheel {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 15px 5px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .discount-wheel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .discount-item {
+            min-width: 60px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background-color);
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .discount-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+        }
+
+        .discount-item.selected {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .calc-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            background: var(--background-color);
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calc-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .calc-btn:hover::before {
+            opacity: 1;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+        }
+
+        .calc-btn.number {
+            color: var(--text-color);
+        }
+
+        .calc-btn.operator {
+            color: var(--primary-color);
+        }
+
+        .calc-btn.clear {
+            color: var(--danger-color);
+        }
+
+        .calc-btn.equals {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .calc-btn.vat-toggle {
+            background: var(--primary-color);
+            color: white;
+            font-size: 18px;
+        }
+
+        .calc-btn.vat-toggle.active {
+            background: var(--success-color);
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .calc-btn.wide {
+            grid-column: span 2;
+            width: auto;
+            border-radius: 35px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(113, 128, 150, 0.2);
+        }
+
+        .designer {
+            color: var(--secondary-color);
+            font-size: 12px;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        .customization-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .customization-panel.active {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .panel-header h3 {
+            color: var(--text-color);
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-panel {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-panel:hover {
+            color: var(--danger-color);
+        }
+
+        .setting-group {
+            background: rgba(224, 229, 236, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .setting-group-title {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .setting-label {
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            background: none;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .color-picker::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-picker::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .range-slider {
+            width: 120px;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--background-color);
+            border-radius: 3px;
+            outline: none;
+            box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-upload {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            background: var(--background-color);
+            border: 2px dashed rgba(113, 128, 150, 0.3);
+            color: var(--text-color);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background: rgba(79, 172, 254, 0.1);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--danger-color), #e53e3e);
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(245, 101, 101, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 12px rgba(245, 101, 101, 0.4);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--background-color);
+            border: none;
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            color: var(--primary-color);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            transform: rotate(90deg);
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: none;
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .history-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            max-height: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .history-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-header h4 {
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .clear-history {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .clear-history:hover {
+            background: rgba(245, 101, 101, 0.1);
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid rgba(113, 128, 150, 0.1);
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-expression {
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .history-result {
+            color: var(--primary-color);
+            font-weight: 600;
+            direction: ltr;
+        }
+
+        .history-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--background-color);
+            border: none;
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            color: var(--primary-color);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+        }
+
+        @media (max-width: 768px) {
+            .calculator {
+                padding: 20px;
+            }
+            
+            .calc-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 20px;
+            }
+            
+            .current-input {
+                font-size: 36px;
+            }
+            
+            .customization-panel {
+                width: 280px;
+            }
+            
+            .history-panel {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 15px;
+                border-radius: 30px;
+            }
+            
+            .calc-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 18px;
+            }
+            
+            .current-input {
+                font-size: 32px;
+            }
+            
+            .buttons-grid {
+                gap: 10px;
+            }
+            
+            .discount-item {
+                min-width: 50px;
+                height: 45px;
+                font-size: 12px;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--background-color);
+            border: none;
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            color: var(--primary-color);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sound-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+        }
+
+        .sound-toggle.muted {
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Customization Panel -->
+    <div class="overlay" id="overlay" onclick="toggleCustomizationPanel()"></div>
+    
+    <div class="customization-panel" id="customizationPanel">
+        <div class="panel-header">
+            <h3><i class="fas fa-palette"></i> لوحة التخصيص </h3>
+            <button class="close-panel" onclick="toggleCustomizationPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="setting-group">
+            <div class="setting-group-title">
+                <i class="fas fa-paint-brush"></i> الألوان الأساسية
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">لون الخلفية</span>
+                <input type="color" class="color-picker" id="bgColor" value="#e0e5ec" onchange="updateColor('--background-color', this.value)">
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">لون النص الأساسي</span>
+                <input type="color" class="color-picker" id="textColor" value="#4a5568" onchange="updateColor('--text-color', this.value)">
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">لون العناصر الأساسية</span>
+                <input type="color" class="color-picker" id="primaryColor" value="#4facfe" onchange="updateColor('--primary-color', this.value)">
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">لون العناصر الثانوية</span>
+                <input type="color" class="color-picker" id="secondaryColor" value="#718096" onchange="updateColor('--secondary-color', this.value)">
+            </div>
+        </div>
+        
+        <div class="setting-group">
+            <div class="setting-group-title">
+                <i class="fas fa-sliders-h"></i> الإعدادات المتقدمة
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">حجم الخط الرئيسي</span>
+                <input type="range" class="range-slider" id="fontSize" min="24" max="48" value="42" oninput="updateFontSize(this.value)">
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">استدارة الزوايا</span>
+                <input type="range" class="range-slider" id="borderRadius" min="20" max="60" value="40" oninput="updateBorderRadius(this.value)">
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">شدة الظلال</span>
+                <input type="range" class="range-slider" id="shadowIntensity" min="10" max="40" value="25" oninput="updateShadowIntensity(this.value)">
+            </div>
+        </div>
+        
+        <div class="setting-group">
+            <div class="setting-group-title">
+                <i class="fas fa-image"></i> خلفية الصفحة
+            </div>
+            
+            <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                <span class="setting-label">رفع صورة خلفية</span>
+                <input type="file" class="file-upload" id="bgImageUpload" accept="image/*" onchange="handleBackgroundImage(this)">
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">تدرج اللون</span>
+                <select class="file-upload" id="gradientSelect" onchange="applyGradient(this.value)">
+                    <option value="none">بدون تدرج</option>
+                    <option value="blue">أزرق</option>
+                    <option value="purple">بنفسجي</option>
+                    <option value="sunset">غروب الشمس</option>
+                    <option value="ocean">محيط</option>
+                </select>
+            </div>
+        </div>
+        
+        <button class="reset-btn" onclick="resetToDefaults()">
+            <i class="fas fa-redo"></i> إعادة التعيين إلى الإعدادات الافتراضية
+        </button>
+    </div>
+    
+    <!-- History Panel -->
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">
+            <h4><i class="fas fa-history"></i> سجل العمليات</h4>
+            <button class="clear-history" onclick="clearHistory()">
+                <i class="fas fa-trash"></i> مسح السجل
+            </button>
+        </div>
+        <div class="history-list" id="historyList">
+            <!-- History items will be added here dynamically -->
+        </div>
+    </div>
+    
+    <!-- Control Buttons -->
+    <button class="control-btn" onclick="toggleCustomizationPanel()">
+        <i class="fas fa-cog"></i>
+    </button>
+    
+    <button class="history-toggle" onclick="toggleHistoryPanel()">
+        <i class="fas fa-history"></i>
+    </button>
+    
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        <i class="fas fa-volume-up"></i>
+    </button>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <!-- Main Calculator -->
+    <div class="calculator-container">
+        <div class="header">
+        </div>
+        
+        <div class="calculator" id="calculator">
+            <div class="display">
+                <div class="display-content">
+                    <div class="current-input" id="display">0</div>
+                    <div class="calculation-info">
+                        <div class="info-row">
+                            <span class="info-label">المبلغ الأصلي:</span>
+                            <span class="info-value" id="originalAmount">0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">قيمة الضريبة (15%):</span>
+                            <span class="info-value" id="taxAmount">0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">نسبة الخصم:</span>
+                            <span class="info-value" id="discountPercentage">0%</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">قيمة الخصم:</span>
+                            <span class="info-value" id="discountAmount">0.00</span>
+                        </div>
+                        <div class="info-row" style="margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--primary-color);">
+                            <span class="info-label" style="font-size: 16px; font-weight: 700;">الإجمالي النهائي:</span>
+                            <span class="info-value" id="finalAmount" style="font-size: 18px; color: var(--primary-color); font-weight: 800;">0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discount-section">
+                <div class="section-title">
+                    <i class="fas fa-percentage"></i>  الخصم
+                </div>
+                <div class="discount-wheel" id="discountWheel">
+                    <!-- Discount items will be added dynamically -->
+                </div>
+            </div>
+            
+            <div class="buttons-grid">
+                <!-- Row 1 -->
+                <button class="calc-btn clear wide" onclick="clearAll()">
+                    AC
+                </button>
+                <button class="calc-btn operator" onclick="appendOperator('/')">
+                    ÷
+                </button>
+                <button class="calc-btn operator" onclick="appendOperator('*')">
+                    ×
+                </button>
+                
+                <!-- Row 2 -->
+                <button class="calc-btn number" onclick="appendNumber('7')">
+                    7
+                </button>
+                <button class="calc-btn number" onclick="appendNumber('8')">
+                    8
+                </button>
+                <button class="calc-btn number" onclick="appendNumber('9')">
+                    9
+                </button>
+                <button class="calc-btn operator" onclick="appendOperator('-')">
+                    -
+                </button>
+                
+                <!-- Row 3 -->
+                <button class="calc-btn number" onclick="appendNumber('4')">
+                    4
+                </button>
+                <button class="calc-btn number" onclick="appendNumber('5')">
+                    5
+                </button>
+                <button class="calc-btn number" onclick="appendNumber('6')">
+                    6
+                </button>
+                <button class="calc-btn operator" onclick="appendOperator('+')">
+                    +
+                </button>
+                
+                <!-- Row 4 -->
+                <button class="calc-btn number" onclick="appendNumber('1')">
+                    1
+                </button>
+                <button class="calc-btn number" onclick="appendNumber('2')">
+                    2
+                </button>
+                <button class="calc-btn number" onclick="appendNumber('3')">
+                    3
+                </button>
+                <button class="calc-btn equals" onclick="calculate()">
+                    =
+                </button>
+                
+                <!-- Row 5 -->
+                <button class="calc-btn number wide" onclick="appendNumber('0')">
+                    0
+                </button>
+                <button class="calc-btn number" onclick="appendDecimal()">
+                    .
+                </button>
+                <button class="calc-btn vat-toggle" id="vatToggle" onclick="toggleVAT()">
+                    15%
+                </button>
+            </div>
+            
+            <div class="footer">
+                <div class="designer">DESIGN BY KHALED.55783</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize calculator state
+        let calculatorState = {
+            currentInput: '0',
+            previousInput: '',
+            operator: '',
+            waitingForNewInput: false,
+            vatEnabled: false,
+            discountPercentage: 0,
+            calculationHistory: [],
+            soundEnabled: true
+        };
+
+        // DOM Elements
+        const displayElement = document.getElementById('display');
+        const originalAmountElement = document.getElementById('originalAmount');
+        const taxAmountElement = document.getElementById('taxAmount');
+        const discountPercentageElement = document.getElementById('discountPercentage');
+        const discountAmountElement = document.getElementById('discountAmount');
+        const finalAmountElement = document.getElementById('finalAmount');
+        const discountWheelElement = document.getElementById('discountWheel');
+        const vatToggleElement = document.getElementById('vatToggle');
+        const historyListElement = document.getElementById('historyList');
+        const notificationElement = document.getElementById('notification');
+        const soundToggleElement = document.getElementById('soundToggle');
+
+        // Initialize the calculator
+        function initCalculator() {
+            // Initialize discount wheel
+            initDiscountWheel();
+            
+            // Load saved settings
+            loadSettings();
+            
+            // Update display
+            updateDisplay();
+            
+            // Add keyboard support
+            document.addEventListener('keydown', handleKeyboardInput);
+            
+            // Play startup sound
+            playSound('startup');
+            
+            // Show welcome notification
+            showNotification('VAT Calculator  مرحباً بك ', 'success');
+        }
+
+        // Initialize discount wheel
+        function initDiscountWheel() {
+            discountWheelElement.innerHTML = '';
+            
+            const discounts = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100];
+            
+            discounts.forEach(discount => {
+                const discountItem = document.createElement('div');
+                discountItem.className = 'discount-item';
+                discountItem.textContent = `${discount}%`;
+                discountItem.dataset.value = discount;
+                
+                if (discount === 0) {
+                    discountItem.classList.add('selected');
+                }
+                
+                discountItem.addEventListener('click', () => {
+                    // Remove selected class from all items
+                    document.querySelectorAll('.discount-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked item
+                    discountItem.classList.add('selected');
+                    
+                    // Update discount percentage
+                    calculatorState.discountPercentage = discount;
+                    
+                    // Update display
+                    updateDisplay();
+                    
+                    // Play sound
+                    playSound('click');
+                    
+                    // Show notification
+                    showNotification(`تم تعيين الخصم إلى ${discount}%`, 'info');
+                });
+                
+                discountWheelElement.appendChild(discountItem);
+            });
+        }
+
+        // Append number to display
+        function appendNumber(number) {
+            playSound('click');
+            
+            if (calculatorState.waitingForNewInput) {
+                calculatorState.currentInput = number;
+                calculatorState.waitingForNewInput = false;
+            } else {
+                calculatorState.currentInput = calculatorState.currentInput === '0' ? number : calculatorState.currentInput + number;
+            }
+            
+            updateDisplay();
+        }
+
+        // Append operator
+        function appendOperator(operator) {
+            playSound('click');
+            
+            if (calculatorState.operator && !calculatorState.waitingForNewInput) {
+                calculate();
+            }
+            
+            calculatorState.previousInput = calculatorState.currentInput;
+            calculatorState.operator = operator;
+            calculatorState.waitingForNewInput = true;
+            
+            updateDisplay();
+        }
+
+        // Append decimal point
+        function appendDecimal() {
+            playSound('click');
+            
+            if (calculatorState.waitingForNewInput) {
+                calculatorState.currentInput = '0.';
+                calculatorState.waitingForNewInput = false;
+            } else if (!calculatorState.currentInput.includes('.')) {
+                calculatorState.currentInput += '.';
+            }
+            
+            updateDisplay();
+        }
+
+        // Calculate result
+        function calculate() {
+            playSound('calculate');
+            
+            if (!calculatorState.operator || calculatorState.waitingForNewInput) {
+                return;
+            }
+            
+            const prev = parseFloat(calculatorState.previousInput);
+            const current = parseFloat(calculatorState.currentInput);
+            
+            if (isNaN(prev) || isNaN(current)) {
+                showNotification('خطأ في الإدخال', 'error');
+                return;
+            }
+            
+            let result;
+            switch (calculatorState.operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        showNotification('لا يمكن القسمة على صفر', 'error');
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            
+            // Add to history
+            const historyEntry = {
+                expression: `${calculatorState.previousInput} ${calculatorState.operator} ${calculatorState.currentInput}`,
+                result: result.toFixed(2),
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            calculatorState.calculationHistory.unshift(historyEntry);
+            updateHistoryDisplay();
+            
+            // Update calculator state
+            calculatorState.currentInput = result.toString();
+            calculatorState.operator = '';
+            calculatorState.previousInput = '';
+            calculatorState.waitingForNewInput = true;
+            
+            updateDisplay();
+            
+            // Show notification
+            showNotification('تمت العملية الحسابية بنجاح', 'success');
+        }
+
+        // Clear all
+        function clearAll() {
+            playSound('clear');
+            
+            calculatorState.currentInput = '0';
+            calculatorState.previousInput = '';
+            calculatorState.operator = '';
+            calculatorState.waitingForNewInput = false;
+            
+            updateDisplay();
+            
+            showNotification('تم مسح جميع المدخلات', 'info');
+        }
+
+        // Toggle VAT
+        function toggleVAT() {
+            playSound('toggle');
+            
+            calculatorState.vatEnabled = !calculatorState.vatEnabled;
+            vatToggleElement.classList.toggle('active', calculatorState.vatEnabled);
+            
+            updateDisplay();
+            
+            const status = calculatorState.vatEnabled ? 'مفعلة' : 'معطلة';
+            showNotification(`الضريبة ${status}`, 'info');
+        }
+
+        // Update display
+        function updateDisplay() {
+            const currentValue = parseFloat(calculatorState.currentInput) || 0;
+            
+            // Update main display
+            displayElement.textContent = formatNumber(currentValue);
+            
+            // Calculate values
+            const vatAmount = calculatorState.vatEnabled ? currentValue * 0.15 : 0;
+            const amountWithVAT = currentValue + vatAmount;
+            const discountAmount = amountWithVAT * (calculatorState.discountPercentage / 100);
+            const finalAmount = amountWithVAT - discountAmount;
+            
+            // Update info display
+            originalAmountElement.textContent = formatNumber(currentValue);
+            taxAmountElement.textContent = formatNumber(vatAmount);
+            discountPercentageElement.textContent = `${calculatorState.discountPercentage}%`;
+            discountAmountElement.textContent = formatNumber(discountAmount);
+            finalAmountElement.textContent = formatNumber(finalAmount);
+            
+            // Update VAT button
+            vatToggleElement.innerHTML = calculatorState.vatEnabled ? 
+                '<i class="fas fa-check"></i> 15%' : 
+                '15%';
+        }
+
+        // Format number with commas
+        function formatNumber(number) {
+            return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        // Update history display
+        function updateHistoryDisplay() {
+            historyListElement.innerHTML = '';
+            
+            calculatorState.calculationHistory.slice(0, 10).forEach(entry => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div class="history-expression">${entry.expression} =</div>
+                    <div class="history-result">${entry.result}</div>
+                    <div style="font-size: 12px; color: var(--secondary-color); margin-top: 5px;">${entry.timestamp}</div>
+                `;
+                
+                historyListElement.appendChild(historyItem);
+            });
+        }
+
+        // Clear history
+        function clearHistory() {
+            playSound('clear');
+            
+            calculatorState.calculationHistory = [];
+            updateHistoryDisplay();
+            
+            showNotification('تم مسح سجل العمليات', 'info');
+        }
+
+        // Handle keyboard input
+        function handleKeyboardInput(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9') {
+                appendNumber(key);
+            } else if (key === '.') {
+                appendDecimal();
+            } else if (key === '+') {
+                appendOperator('+');
+            } else if (key === '-') {
+                appendOperator('-');
+            } else if (key === '*') {
+                appendOperator('*');
+            } else if (key === '/') {
+                event.preventDefault();
+                appendOperator('/');
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                calculate();
+            } else if (key === 'Escape' || key === 'Delete') {
+                clearAll();
+            } else if (key === 'v' || key === 'V') {
+                toggleVAT();
+            }
+        }
+
+        // Play sound
+        function playSound(type) {
+            if (!calculatorState.soundEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                let frequency = 440;
+                let duration = 0.1;
+                
+                switch (type) {
+                    case 'click':
+                        frequency = 523.25; // C5
+                        break;
+                    case 'calculate':
+                        frequency = 659.25; // E5
+                        duration = 0.3;
+                        break;
+                    case 'clear':
+                        frequency = 392.00; // G4
+                        break;
+                    case 'toggle':
+                        frequency = 587.33; // D5
+                        break;
+                    case 'startup':
+                        frequency = 783.99; // G5
+                        duration = 0.5;
+                        break;
+                    case 'error':
+                        frequency = 349.23; // F4
+                        break;
+                }
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            calculatorState.soundEnabled = !calculatorState.soundEnabled;
+            soundToggleElement.classList.toggle('muted', !calculatorState.soundEnabled);
+            soundToggleElement.innerHTML = calculatorState.soundEnabled ? 
+                '<i class="fas fa-volume-up"></i>' : 
+                '<i class="fas fa-volume-mute"></i>';
+            
+            const status = calculatorState.soundEnabled ? 'مفعل' : 'معطل';
+            showNotification(`الصوت ${status}`, 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            notificationElement.textContent = message;
+            notificationElement.className = 'notification';
+            
+            // Set color based on type
+            switch (type) {
+                case 'success':
+                    notificationElement.style.background = 'var(--success-color)';
+                    break;
+                case 'error':
+                    notificationElement.style.background = 'var(--danger-color)';
+                    break;
+                case 'info':
+                    notificationElement.style.background = 'var(--primary-color)';
+                    break;
+                case 'warning':
+                    notificationElement.style.background = 'var(--warning-color)';
+                    break;
+            }
+            
+            notificationElement.classList.add('show');
+            
+            setTimeout(() => {
+                notificationElement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Customization functions
+        function toggleCustomizationPanel() {
+            const panel = document.getElementById('customizationPanel');
+            const overlay = document.getElementById('overlay');
+            
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            playSound('toggle');
+        }
+
+        function toggleHistoryPanel() {
+            const panel = document.getElementById('historyPanel');
+            panel.classList.toggle('active');
+            playSound('toggle');
+        }
+
+        function updateColor(variable, value) {
+            document.documentElement.style.setProperty(variable, value);
+            saveSettings();
+            playSound('click');
+        }
+
+        function updateFontSize(size) {
+            document.querySelector('.current-input').style.fontSize = `${size}px`;
+            saveSettings();
+        }
+
+        function updateBorderRadius(radius) {
+            document.getElementById('calculator').style.borderRadius = `${radius}px`;
+            document.querySelector('.display').style.borderRadius = `${radius / 2}px`;
+            saveSettings();
+        }
+
+        function updateShadowIntensity(intensity) {
+            const calculator = document.getElementById('calculator');
+            const display = document.querySelector('.display');
+            const buttons = document.querySelectorAll('.calc-btn');
+            
+            calculator.style.boxShadow = `${intensity}px ${intensity}px ${intensity * 2}px var(--shadow-dark), -${intensity}px -${intensity}px ${intensity * 2}px var(--shadow-light)`;
+            display.style.boxShadow = `inset ${intensity/3}px ${intensity/3}px ${intensity/1.5}px var(--shadow-dark), inset -${intensity/3}px -${intensity/3}px ${intensity/1.5}px var(--shadow-light)`;
+            
+            buttons.forEach(btn => {
+                btn.style.boxShadow = `${intensity/4}px ${intensity/4}px ${intensity/2}px var(--shadow-dark), -${intensity/4}px -${intensity/4}px ${intensity/2}px var(--shadow-light)`;
+            });
+            
+            saveSettings();
+        }
+
+        function handleBackgroundImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.body.style.backgroundImage = `url('${e.target.result}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                    saveSettings();
+                    showNotification('تم تغيير خلفية الصفحة', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function applyGradient(gradient) {
+            const gradients = {
+                'none': 'none',
+                'blue': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'purple': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'sunset': 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
+                'ocean': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+            };
+            
+            if (gradient === 'none') {
+                document.body.style.backgroundImage = 'none';
+                document.body.style.backgroundColor = 'var(--background-color)';
+            } else {
+                document.body.style.backgroundImage = gradients[gradient];
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+            }
+            
+            saveSettings();
+            showNotification('تم تطبيق التدرج اللوني', 'success');
+        }
+
+        function resetToDefaults() {
+            playSound('clear');
+            
+            // Reset colors
+            updateColor('--background-color', '#e0e5ec');
+            updateColor('--text-color', '#4a5568');
+            updateColor('--primary-color', '#4facfe');
+            updateColor('--secondary-color', '#718096');
+            
+            // Reset inputs
+            document.getElementById('bgColor').value = '#e0e5ec';
+            document.getElementById('textColor').value = '#4a5568';
+            document.getElementById('primaryColor').value = '#4facfe';
+            document.getElementById('secondaryColor').value = '#718096';
+            document.getElementById('fontSize').value = 42;
+            document.getElementById('borderRadius').value = 40;
+            document.getElementById('shadowIntensity').value = 25;
+            document.getElementById('bgImageUpload').value = '';
+            document.getElementById('gradientSelect').value = 'none';
+            
+            // Reset styles
+            updateFontSize(42);
+            updateBorderRadius(40);
+            updateShadowIntensity(25);
+            applyGradient('none');
+            
+            // Clear background image
+            document.body.style.backgroundImage = 'none';
+            document.body.style.backgroundColor = 'var(--background-color)';
+            
+            showNotification('تم إعادة التعيين إلى الإعدادات الافتراضية', 'success');
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            const settings = {
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--background-color').trim(),
+                textColor: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+                primaryColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
+                secondaryColor: getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim(),
+                fontSize: document.getElementById('fontSize').value,
+                borderRadius: document.getElementById('borderRadius').value,
+                shadowIntensity: document.getElementById('shadowIntensity').value,
+                gradient: document.getElementById('gradientSelect').value
+            };
+            
+            localStorage.setItem('vatCalculatorSettings', JSON.stringify(settings));
+        }
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('vatCalculatorSettings');
+            
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                // Apply colors
+                updateColor('--background-color', settings.backgroundColor);
+                updateColor('--text-color', settings.textColor);
+                updateColor('--primary-color', settings.primaryColor);
+                updateColor('--secondary-color', settings.secondaryColor);
+                
+                // Update inputs
+                document.getElementById('bgColor').value = settings.backgroundColor;
+                document.getElementById('textColor').value = settings.textColor;
+                document.getElementById('primaryColor').value = settings.primaryColor;
+                document.getElementById('secondaryColor').value = settings.secondaryColor;
+                document.getElementById('fontSize').value = settings.fontSize;
+                document.getElementById('borderRadius').value = settings.borderRadius;
+                document.getElementById('shadowIntensity').value = settings.shadowIntensity;
+                document.getElementById('gradientSelect').value = settings.gradient;
+                
+                // Apply other settings
+                updateFontSize(settings.fontSize);
+                updateBorderRadius(settings.borderRadius);
+                updateShadowIntensity(settings.shadowIntensity);
+                applyGradient(settings.gradient);
+            }
+        }
+
+        // Initialize calculator when page loads
+        document.addEventListener('DOMContentLoaded', initCalculator);
+
+        // Add animation to calculator buttons on hover
+        document.querySelectorAll('.calc-btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add ripple effect to buttons
+        document.querySelectorAll('.calc-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.7);
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    width: ${size}px;
+                    height: ${size}px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add theme detection
+        function detectTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // Dark theme detected
+                document.body.classList.add('dark-theme');
+            }
+        }
+
+        // Initialize theme detection
+        detectTheme();
+
+        // Listen for theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
+    </script>
 </body>
 </html>
-
-
-
