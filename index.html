@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>VAT</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="google-adsense-account" content="ca-pub-4245861475999076">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4245861475999076"
      crossorigin="anonymous"></script>
@@ -132,8 +132,8 @@
 
         .calculator {
             background: var(--background-color);
-            border-radius: 40px;
-            padding: 30px;
+            border-radius: clamp(24px, 6vw, 40px);
+            padding: clamp(16px, 6vw, 30px);
             box-shadow: 25px 25px 50px var(--shadow-dark), -25px -25px 50px var(--shadow-light);
             position: relative;
             overflow: hidden;
@@ -160,7 +160,7 @@
         .display {
             background: var(--background-color);
             border-radius: 20px;
-            padding: 25px;
+            padding: clamp(14px, 5vw, 25px);
             margin-bottom: 25px;
             box-shadow: inset 8px 8px 16px var(--shadow-dark), inset -8px -8px 16px var(--shadow-light);
             position: relative;
@@ -173,7 +173,7 @@
         }
 
         .current-input {
-            font-size: 42px;
+            font-size: clamp(26px, 9vw, 42px);
             font-weight: 700;
             color: var(--text-color);
             text-align: left;
@@ -241,8 +241,8 @@
         }
 
         .discount-item {
-            min-width: 60px;
-            height: 50px;
+            min-width: clamp(44px, 12vw, 60px);
+            height: clamp(38px, 10vw, 50px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -250,7 +250,7 @@
             border-radius: 15px;
             cursor: pointer;
             box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-            font-size: 14px;
+            font-size: clamp(11px, 3vw, 14px);
             font-weight: 600;
             color: var(--text-color);
             flex-shrink: 0;
@@ -273,18 +273,18 @@
         .buttons-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: clamp(8px, 3vw, 15px);
             margin-bottom: 25px;
         }
 
         .calc-btn {
-            width: 70px;
-            height: 70px;
+            width: clamp(46px, 15vw, 70px);
+            height: clamp(46px, 15vw, 70px);
             border-radius: 50%;
             border: none;
             background: var(--background-color);
             box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
-            font-size: 22px;
+            font-size: clamp(15px, 5vw, 22px);
             font-weight: 600;
             color: var(--text-color);
             cursor: pointer;
@@ -374,7 +374,7 @@
             position: fixed;
             top: 0;
             right: -320px;
-            width: 300px;
+            width: min(300px, 88vw);
             height: 100vh;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -584,7 +584,7 @@
             position: fixed;
             bottom: 20px;
             left: 20px;
-            width: 300px;
+            width: min(300px, calc(100vw - 40px));
             max-height: 400px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -683,56 +683,10 @@
             box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
         }
 
-        @media (max-width: 768px) {
-            .calculator {
-                padding: 20px;
-            }
-            
-            .calc-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 20px;
-            }
-            
-            .current-input {
-                font-size: 36px;
-            }
-            
-            .customization-panel {
-                width: 280px;
-            }
-            
-            .history-panel {
-                width: calc(100% - 40px);
-                left: 20px;
-                right: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .calculator {
-                padding: 15px;
-                border-radius: 30px;
-            }
-            
-            .calc-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 18px;
-            }
-            
-            .current-input {
-                font-size: 32px;
-            }
-            
-            .buttons-grid {
-                gap: 10px;
-            }
-            
-            .discount-item {
-                min-width: 50px;
-                height: 45px;
-                font-size: 12px;
+        /* شاشات صغيرة جداً فقط (أقل من 340px) - هامش خارجي إضافي بسيط */
+        @media (max-width: 340px) {
+            body {
+                padding: 12px;
             }
         }
 
